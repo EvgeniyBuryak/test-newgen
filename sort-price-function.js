@@ -1,9 +1,9 @@
 
 // Список курсов
 let courses = [
-    { name: "Courses in England", prices: [0, 100] }, // *
+    { name: "Courses in England", prices: [0, 100] },
     { name: "Courses in Germany", prices: [500, null] }, 
-    { name: "Courses in Italy", prices: [100, 200] }, // *
+    { name: "Courses in Italy", prices: [100, 200] },
     { name: "Courses in Russia", prices: [null, 400] },
     { name: "Courses in China", prices: [50, 250] },
     { name: "Courses in USA", prices: [200, null] },
@@ -18,33 +18,64 @@ let requiredRange3 = [200, null];
 
 // [подходящие курсы для каждого варианта фильтра]
 
+// let filterByPrice = (array, number, price) => {    
+//     return array.filter( ({ prices }) => {
+//         if (prices[0])
+
+//         if (prices[number] < price)
+//             return false;
+//     });
+// }
+
 /**
  * Берём массив объектов(курсов) состоящих из свойства "name" и "prices".
- * 
+ * Делим на три варианта
  */
 let SortByPrice = (requiredRange, courses) => {
     const [from, to] = requiredRange;
+    let newCourses = courses;
 
-    // requiredRange[0].reduce( curr => 
+    if (from !== null) { 
+        
+        newCourses = newCourses.filter( ({ prices }) => {
 
-    let sortedFirst = courses.filter( ({ prices }) => {
-        if (prices[0] >= from && prices[0] <= to)
+            if (prices[0] < from && prices[1] > from) return false;
+
             return true;
-    });
+        });
+    }
 
-    let sortedSecond = sortedFirst.filter( ({ prices }) => {
-        if (prices[1] <= to)
+    // let newCourses = newCourses.filter( ({ prices }) => {
+        
+    //     // if (prices[0] === null) return false;
+    //     // if (to === null)
+
+    //     if (prices[0] <= from) return false;
+
+    //     if (prices[0] <= to)
+    //         return true;
+    // });
+
+    if (to !== null) {
+
+        newCourses = newCourses.filter( ({ prices }) => {
+
+            if (prices[0] > to && prices[1] < to) return false;
+
+            if (prices[0] === null && prices[1] === null) return false;
+            
             return true;
-    })
+        });
+    }
 
-    sortedSecond.forEach( ({prices}) => alert(`prices: ${prices}`) );
-    
-    // courses.filter( item => {
-    //     const [from2, to2] = item.prices;
-
-    //     // if (from >= from2) alert(`prices: ${item.prices}`);
-    //     if (to >= to2) alert(`prices: ${item.prices}`);
-    // })
+    newCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );    
 }
 
 SortByPrice(requiredRange2, courses);
+
+// courses.filter( item => {
+//     const [from2, to2] = item.prices;
+
+//     // if (from >= from2) alert(`prices: ${item.prices}`);
+//     if (to >= to2) alert(`prices: ${item.prices}`);
+// })
