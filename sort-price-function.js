@@ -27,51 +27,74 @@ let requiredRange3 = [200, null];
 //     });
 // }
 
+// Функции для поиска подходящего курса
+let SortByTo = (to) => {
+
+
+}
+let SortByFrom = () => {}
+let SortByFromAndTo = () => {}
+
 /**
  * Берём массив объектов(курсов) состоящих из свойства "name" и "prices".
  * Делим на три варианта
  */
 let SortByPrice = (requiredRange, courses) => {
     const [from, to] = requiredRange;
-    let newCourses = courses;
+    // let newCourses = courses;
 
-    if (from !== null) { 
-        
-        newCourses = newCourses.filter( ({ prices }) => {
+    
 
-            if (prices[0] < from && prices[1] > from) return false;
-
-            return true;
-        });
-    }
-
-    // let newCourses = newCourses.filter( ({ prices }) => {
-        
-    //     // if (prices[0] === null) return false;
-    //     // if (to === null)
-
-    //     if (prices[0] <= from) return false;
-
-    //     if (prices[0] <= to)
-    //         return true;
-    // });
-
-    if (to !== null) {
-
-        newCourses = newCourses.filter( ({ prices }) => {
-
-            if (prices[0] > to && prices[1] < to) return false;
-
-            if (prices[0] === null && prices[1] === null) return false;
-            
-            return true;
-        });
-    }
-
-    newCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );    
+    let coursesTo = courses.filter ( ({prices}) => prices[0] === null ); // курсы до определенной цены
+    let coursesFrom = courses.filter ( ({prices}) => prices[1] === null ); // курсы от определенной цены
+    let coursesFromAndTo = courses.filter ( ({prices}) => prices[0] !== null && prices[1] !== null ); // курс от и до
+    coursesFromAndTo.forEach( ({prices}) => alert(`prices: ${prices}`) );
 }
 
-SortByPrice(requiredRange2, courses);
+
+SortByPrice(requiredRange1, courses);
+
+// let SortByPrice = (requiredRange, courses) => {
+//     const [from, to] = requiredRange;
+//     let newCourses = courses;
+
+//     if (from !== null) { 
+        
+//         newCourses = newCourses.filter( ({ prices }) => {
+
+//             if (prices[0] < from && prices[1] > from) return false;
+
+//             return true;
+//         });
+//     }
+
+//     // let newCourses = newCourses.filter( ({ prices }) => {
+        
+//     //     // if (prices[0] === null) return false;
+//     //     // if (to === null)
+
+//     //     if (prices[0] <= from) return false;
+
+//     //     if (prices[0] <= to)
+//     //         return true;
+//     // });
+
+//     if (to !== null) {
+
+//         newCourses = newCourses.filter( ({ prices }) => {
+
+//             if (prices[0] > to && prices[1] < to) return false;
+
+//             if (prices[0] === null && prices[1] === null) return false;
+            
+//             return true;
+//         });
+//     }
+
+//     newCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );    
+// }
+
+// SortByPrice(requiredRange2, courses);
 
 // courses.filter( item => {
 //     const [from2, to2] = item.prices;
