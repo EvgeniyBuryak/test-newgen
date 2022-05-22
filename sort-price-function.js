@@ -1,4 +1,3 @@
-
 // Список курсов
 let courses = [
     { name: "Courses in England", prices: [0, 100] },
@@ -17,28 +16,25 @@ let requiredRange2       = [100, 350];
 let requiredRange3       = [200, null];
 
 /**
- * Разделяем курсы на три массива, чтобы облегчить обработку
+ * 0) Используем ранее отфильрованые курсы по трем вариантам в поиске подходящих
+ * 1) Сначала ищем подходящие курсы из массива где храняться "ДО" какой-то цены
+ * 2) Потом ищем в массиве курсов где храняться "ОТ" какой-то цены
+ * 3) В конце из курсов где цена была указана "ОТ" и "ДО"
  */
-// курсы до определенной цены [null, 400]
-let coursesTo            = courses.filter ( ({prices}) => prices[0] === null && prices[1] !== null );
-// курсы от определенной цены [200, null]
-let coursesFrom          = courses.filter ( ({prices}) => prices[0] !== null && prices[1] === null );
-// курсы от и до [100, 200]
-let coursesFromAndTo     = courses.filter ( ({prices}) => prices[0] !== null && prices[1] !== null );
 
 /**
- * Функции для поиска курса до определенного цены [null, 200]
+ * Функции для поиска курса до определенного цены [null, 200].
  * @param {number} to - число, до которого осуществляется поиск
  */
-let SortByTo = (to) => {
-    let selectedCourses  = null;
-    
-    selectedCourses      =         coursesTo.filter( ({prices}) => prices[1] <= to );
-    selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] <= to ));
-    selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] <= to && prices[1] <= to))
+let filterPricesTo       = (to) => {
 
-    // [подходящие курсы для каждого варианта фильтра]
-    selectedCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );
+    let selectedCourses  = [];
+    
+    // selectedCourses.push(       ...coursesTo.filter( ({prices}) => prices[1] <= to ));
+    // selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] <= to ));
+    // selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] <= to && prices[1] <= to));
+
+    return selectedCourses;
 }
 
 /**
@@ -46,30 +42,55 @@ let SortByTo = (to) => {
  * @param {number} from - число, от которого осуществляется поиск
  * @param {number} to - число, до которого осуществляется поиск
  */
-let SortByFromAndTo = (from, to) => {
-    let selectedCourses  = null;
-    
-    selectedCourses      =         coursesTo.filter( ({prices}) => prices[1] >= from && prices[1] <= to );
-    selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] >= from && prices[0] <= to ));
-    selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] >= from && prices[1] <= to))
+let filterPricesFromTo   = (from, to) => {
 
-    // [подходящие курсы для каждого варианта фильтра]
-    selectedCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );
+    let selectedCourses  = [];
+
+    // selectedCourses.push(       ...coursesTo.filter( ({prices}) => prices[1] >= from && prices[1] <= to ));
+    // selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] >= from && prices[0] <= to ));
+    // selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] >= from && prices[1] <= to ));
+
+    return selectedCourses;
 }
 
 /**
  * Функции для поиска курса от определенной цены [200, null]
  * @param {number} from - число, от которого осуществляется поиск
  */
-let SortByFrom = (from) => {
-    let selectedCourses  = null;
+let filterPricesFrom     = (from) => {
 
-    selectedCourses      =         coursesTo.filter( ({prices}) => prices[1] >= from );
-    selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] >= from ));
-    selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] >= from && prices[1] >= from))
+    let selectedCourses  = [];
 
-    // [подходящие курсы для каждого варианта фильтра]
-    selectedCourses.forEach( ({prices}) => alert(`prices: ${prices}`) );
+    // selectedCourses.push(       ...coursesTo.filter( ({prices}) => prices[1] >= from ));
+    // selectedCourses.push(     ...coursesFrom.filter( ({prices}) => prices[0] >= from ));
+    // selectedCourses.push(...coursesFromAndTo.filter( ({prices}) => prices[0] >= from && prices[1] >= from));
+
+    return selectedCourses;
+}
+
+/**
+ * Сортируем полученный результат по возврастанию
+ * @param {[]} arr - входящий массив
+ * @returns - возвращаем отсортированный массив
+ */
+let sortByPrice = (arr) => {
+    return arr.sort((a,b) => {
+        if (b.prices[0] === null) {
+            return a.prices[0] - b.prices[1];
+        }
+        return a.prices[0] - b.prices[0];
+    })
+}
+
+let templateForFilter = a => b => c => func => (from, to) => {
+    let res  = [];
+    
+    // func(from, to);
+    
+    res.push(...a.filter( ({prices}) => prices[1] >= from ));
+    res.push(...b.filter( ({prices}) => prices[0] >= from ));
+    res.push(...c.filter( ({prices}) => prices[0] >= from && prices[1] >= from));
+    return res;
 }
 
 /**
@@ -82,33 +103,54 @@ let SortByFrom = (from) => {
  * @param {[number | null, number | null]} requiredRange - Варианты цен (фильтры), которые ищет пользователь
  * @param {[number | null, number | null]} courses - список курсов в виде массива объектов, состоящий из двух параметров
  */
-let SortByPrice = (requiredRange, courses) => {
-    const                          [from, to] = requiredRange;
+let filterPricesByRange = (courses, requiredRange) => {
 
-    const RESULT = "" + requiredRange.reduce( (prev, curr) => { 
-        let                                 a = 0;
-        if (prev === null)                  a = 1;
-        if (curr === null)                  a = 2;
-        if (prev !== null && curr !== null) a = 3;
-        return a;
+    const    [from, to] =  requiredRange;
+    let          result =  null;
+
+    /**
+     * Разделяем курсы на три массива, чтобы облегчить обработку
+     */
+    // курсы до определенной цены [null, 400]
+    const coursesTo            = courses.filter ( ({prices}) => prices[0] === null && prices[1] !== null );
+    // курсы от определенной цены [200, null]
+    const coursesFrom          = courses.filter ( ({prices}) => prices[0] !== null && prices[1] === null );
+    // курсы от и до [100, 200]
+    const coursesFromAndTo     = courses.filter ( ({prices}) => prices[0] !== null && prices[1] !== null );
+    
+    /**
+     * Размещаем их
+     */
+    let myFilter = templateForFilter(coursesTo)(coursesFrom)(coursesFromAndTo);
+
+    // От типа диапазона цен, подбираем фильтр
+    const        STRING = "" + requiredRange.reduce( (prev, curr) => { 
+
+        if (prev === null)                  return "to";
+        if (curr === null)                  return "from";
+        if (prev !== null && curr !== null) return "from to";
     });
     
-    switch(RESULT) {
-        case "1":
+    switch(STRING) {
+        case "to":
             alert("to");
-            SortByTo(to);            
+            result = filterPricesTo(to);            
             break;
-        case "2":
+        case "from":
             alert("from");
-            SortByFrom(from);
+            // result = filterPricesFrom(from);
+            result = myFilter(from);
             break;
-        case "3":
+        case "from to":
             alert("from to");
-            SortByFromAndTo(from, to);
+            result = filterPricesFromTo(from, to);
             break;
         default:            
             break;
     }
-}
+    
+    result = sortByPrice(result);
 
-// SortByPrice(requiredRange1, courses);
+    // [подходящие курсы для каждого варианта фильтра]
+    result.forEach( (course) => alert(`name: ${course.name} prices: ${course.prices}`) );
+}
