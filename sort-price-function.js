@@ -109,8 +109,10 @@ let filterPricesByRange     = (courses, requiredRange) => {
     
     // Сортируем полученный результат
     result                  = sortByPrice(unsortedListCourses);
-
-    // И отдаем результат дальше...
-    // [подходящие курсы для каждого варианта фильтра]
-    result.forEach( (course) => alert(`name: ${course.name} prices: ${course.prices}`) );
+    
+    return result;
 }
+
+console.log(filterPricesByRange(courses, requiredRange1));
+console.log(filterPricesByRange(courses, requiredRange2));
+console.log(filterPricesByRange(courses, requiredRange3));
